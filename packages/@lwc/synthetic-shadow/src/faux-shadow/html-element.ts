@@ -13,6 +13,7 @@ import {
     getActiveElement,
     handleFocus,
     handleFocusIn,
+    hostElementFocus,
     ignoreFocus,
     ignoreFocusIn,
 } from './focus';
@@ -115,7 +116,10 @@ function blurPatched(this: HTMLElement) {
 
 function focusPatched(this: HTMLElement) {
     disableKeyboardFocusNavigationRoutines();
-    // TODO [#1327]: Shadow DOM semantics for focus method
+    if (isHostElement(this) && isDelegatingFocus(this)) {
+        hostElementFocus.call(this);
+        return;
+    }
     focus.call(this);
     enableKeyboardFocusNavigationRoutines();
 }
